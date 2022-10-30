@@ -14,6 +14,7 @@ typedef Status<A, B> = void Function(A status, B message);
 
 class Aamarpay extends StatefulWidget {
   final bool isSandBox;
+  final bool condition;
   final String successUrl;
   final String failUrl;
   final String cancelUrl;
@@ -38,6 +39,7 @@ class Aamarpay extends StatefulWidget {
 
   Aamarpay({
     required this.isSandBox,
+    required this.condition,
     required this.successUrl,
     required this.failUrl,
     required this.cancelUrl,
@@ -89,6 +91,7 @@ class _AamarpayState<T> extends State<Aamarpay> {
     return InkWell(
       child: widget.child,
       onTap: () {
+        if (condition){
         _loadingHandler(true);
         _getPayment().then((url) {
           if (url == null) {
@@ -125,6 +128,17 @@ class _AamarpayState<T> extends State<Aamarpay> {
           widget.status?.call(EventState.error, onError.message);
         });
       },
+        } else {
+      Fluttertoast.showToast(
+        msg: "Can't process.Please restart the app.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+      }
     );
   }
 
