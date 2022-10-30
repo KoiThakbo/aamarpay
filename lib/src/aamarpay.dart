@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'web_view.dart';
 
@@ -136,7 +137,7 @@ class _AamarpayState<T> extends State<Aamarpay> {
             });
           } else {
             Fluttertoast.showToast(
-                msg: "Can't process.Please restart the app.",
+                msg: "Can't process.Please refresh the page.",
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.CENTER,
                 timeInSecForIosWeb: 1,
