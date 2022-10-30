@@ -51,7 +51,8 @@ class Aamarpay extends StatefulWidget {
     required this.customerName,
     required this.customerEmail,
     required this.customerMobile,
-    @Deprecated('Use status function insted of paymentStatus') this.paymentStatus,
+    @Deprecated('Use status function insted of paymentStatus')
+        this.paymentStatus,
     this.isLoading,
     required this.child,
     this.returnUrl,
@@ -77,9 +78,11 @@ class _AamarpayState<T> extends State<Aamarpay> {
   }
 
   void _urlHandler(String? value) {
-    widget.returnUrl?.call(value ?? "No url was found because user pressed back button");
+    widget.returnUrl
+        ?.call(value ?? "No url was found because user pressed back button");
     if (value == null) {
-      widget.status?.call(EventState.backButtonPressed, 'User pressed back button');
+      widget.status
+          ?.call(EventState.backButtonPressed, 'User pressed back button');
     }
   }
 
@@ -89,57 +92,59 @@ class _AamarpayState<T> extends State<Aamarpay> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      child: widget.child,
-      onTap: () {
-        if (condition){
-        _loadingHandler(true);
-        _getPayment().then((url) {
-          if (url == null) {
-            _loadingHandler(false);
-            widget.status?.call(EventState.error, 'error');
-          } else {
-            Route route = MaterialPageRoute(
-                builder: (context) => AAWebView(
-                      url: url,
-                      successUrl: widget.successUrl,
-                      failUrl: widget.failUrl,
-                      cancelUrl: widget.cancelUrl,
-                    ));
-            Navigator.push(context, route).then((value) {
-              if (value.toString().contains(widget.successUrl)) {
-                _paymentHandler("success");
-                widget.status?.call(EventState.success, 'Payment has been succeeded');
-              } else if (value.toString().contains(widget.cancelUrl)) {
-                _paymentHandler("cancel");
-                widget.status?.call(EventState.cancel, 'Payment has been canceled');
-              } else if (value.toString().contains(widget.failUrl)) {
-                _paymentHandler("fail");
-                widget.status?.call(EventState.fail, 'Payment has been failed');
+        child: widget.child,
+        onTap: () {
+          if (widget.condition) {
+            _loadingHandler(true);
+            _getPayment().then((url) {
+              if (url == null) {
+                _loadingHandler(false);
+                widget.status?.call(EventState.error, 'error');
               } else {
-                _paymentHandler("fail");
-                widget.status?.call(EventState.fail, 'Payment has been failed');
+                Route route = MaterialPageRoute(
+                    builder: (context) => AAWebView(
+                          url: url,
+                          successUrl: widget.successUrl,
+                          failUrl: widget.failUrl,
+                          cancelUrl: widget.cancelUrl,
+                        ));
+                Navigator.push(context, route).then((value) {
+                  if (value.toString().contains(widget.successUrl)) {
+                    _paymentHandler("success");
+                    widget.status?.call(
+                        EventState.success, 'Payment has been succeeded');
+                  } else if (value.toString().contains(widget.cancelUrl)) {
+                    _paymentHandler("cancel");
+                    widget.status
+                        ?.call(EventState.cancel, 'Payment has been canceled');
+                  } else if (value.toString().contains(widget.failUrl)) {
+                    _paymentHandler("fail");
+                    widget.status
+                        ?.call(EventState.fail, 'Payment has been failed');
+                  } else {
+                    _paymentHandler("fail");
+                    widget.status
+                        ?.call(EventState.fail, 'Payment has been failed');
+                  }
+                  _loadingHandler(false);
+                  _urlHandler(value);
+                });
               }
+            }).catchError((onError) {
               _loadingHandler(false);
-              _urlHandler(value);
+              widget.status?.call(EventState.error, onError.message);
             });
+          } else {
+            Fluttertoast.showToast(
+                msg: "Can't process.Please restart the app.",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0);
           }
-        }).catchError((onError) {
-          _loadingHandler(false);
-          widget.status?.call(EventState.error, onError.message);
         });
-      },
-        } else {
-      Fluttertoast.showToast(
-        msg: "Can't process.Please restart the app.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
-      }
-    );
   }
 
   Future _getPayment() async {
@@ -182,7 +187,8 @@ class _AamarpayState<T> extends State<Aamarpay> {
   _parseExceptionMessage(String data) {
     try {
       dynamic _res = jsonDecode(data);
-      if (_res.runtimeType.toString() == "_InternalLinkedHashMap<String, dynamic>") {
+      if (_res.runtimeType.toString() ==
+          "_InternalLinkedHashMap<String, dynamic>") {
         return _res.values.toList()[0];
       } else {
         return _res;
